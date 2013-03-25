@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">specScan</string>
+    <string name="action_settings">Settings</string>
+    <string name="label_text">Chirp Peak Freq is</string>
+    <string name="label_text2">Hz</string>
+    <string name="peak_hz_text">0</string>
+
+</resources>
