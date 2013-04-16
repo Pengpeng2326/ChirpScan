@@ -6,7 +6,6 @@ package com.pk.chirpscan;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,10 +37,15 @@ public class ChirpScan  extends Activity {
         
         super.onStart();
         
+        audioService = new AudioService();
+        
         /* start the audio service and prepare the render thread */
         startRun();
-
-
+       
+        //audioIntent = new Intent(this, AudioService.class);
+        //startService(audioIntent);
+        
+        //isServiceRun = true;
             	
     }
 
@@ -110,9 +114,10 @@ public class ChirpScan  extends Activity {
         super.onStop();
 
         
-        if(isServiceRun)
+        if(audioService!=null)
         {
-        	stopService(intent);
+        	//stopService(audioIntent);
+        	audioService.onDestroy();
         	
         }
         
@@ -131,14 +136,19 @@ public class ChirpScan  extends Activity {
     // Debugging tag.
     private static final String TAG = "ChirpScan";
     
-    //AudioService mService;
+    //the audio processing service
+    AudioService audioService;
     
-    private boolean isServiceRun = false;
+//    //the intent for waking up Audio service
+//    private Intent audioIntent;
+//    
+//    private boolean isServiceRun = false;
+//    
     
-    private Intent intent;
+    
     private RenderThread renderThread;
     /* a default delay to run between ticks */
-    private final long TICK_DELAY = 1000;
+    private final long TICK_DELAY = 500;
     /* define a few tick msgs */
     private final int MSG_TICK = 0;
     private final int MSG_ABORT = 1;
@@ -304,7 +314,18 @@ public class ChirpScan  extends Activity {
     private void tick() {
 
     	if (peakHzText != null) {
-    		peakHzText.setText(String.valueOf(System.currentTimeMillis()));
+    		
+    		//if(audioService.waitUntilReady())
+    		if(audioService!=null)
+    		{
+    			long now = System.currentTimeMillis();
+        		//Message msg = new Message();
+        		//msg.what = AudioService.AUDIO_UPDATE;
+    		
+    			audioService.doUpdate(now);
+    		}
+    		//peakHzText.setText(String.valueOf(System.currentTimeMillis()));
+    		peakHzText.setText(String.valueOf(audioService.peakSpecRead()));
     	}
 		
     }
